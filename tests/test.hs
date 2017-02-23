@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Data.Attoparsec.Text
+import           Data.ByteString.Char8 (pack)
+import           Data.Attoparsec.ByteString.Char8
 import           Test.Tasty
 import           Test.Tasty.HUnit
 import           Data.Time.Calendar (fromGregorian)
@@ -20,7 +21,7 @@ main = defaultMain $ testGroup "NMEA"
 
 gpggaTest :: Assertion
 gpggaTest = do
-    let sGpgga = "$GPGGA,120000.000,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F"
+    let sGpgga = pack "$GPGGA,120000.000,4250.5589,S,14718.5084,E,1,04,24.4,19.7,M,,,,0000*1F"
         day' = fromGregorian 1970 1 1
         eGpgga = Gpgga {
           _gppgaTimeUTC = ZonedTime (LocalTime day' midday) utc
@@ -38,7 +39,7 @@ gpggaTest = do
 
 gprmcTest :: Assertion
 gprmcTest = do
-    let sGprmc = "$GPRMC,000000.000,A,3723.2475,N,12158.3416,W,0.13,309.62,120598,,*10"
+    let sGprmc = pack "$GPRMC,000000.000,A,3723.2475,N,12158.3416,W,0.13,309.62,120598,,*10"
         day' = fromGregorian 1970 1 1
         magVariation = MagneticVariation
           { _magneticVariationValue = Degree {_unDegree = 0.0}
@@ -60,5 +61,5 @@ gprmcTest = do
 gphdtTest :: Assertion
 gphdtTest =
   parseOnly gphdt sGphdt @=? Right eGphdt
-  where sGphdt = "$GPHDT,175.58,T*0C"
+  where sGphdt = pack "$GPHDT,175.58,T*0C"
         eGphdt = Gphdt (Degree 175.58)
